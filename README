@@ -1,0 +1,10 @@
+OMViewer is a simple and lightweight image viewer that can display and navigate color and depth images
+
+
+OMViewer uses the following third party libraries:
+
+boost
+CImg
+X11
+
+CImg is licensed under CECILL-C
