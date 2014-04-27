@@ -380,16 +380,12 @@ int OMViewerApp::display( CImgDisplay& disp )
 
 	CImg<float> zoom;
 
-	bool reset_view		 = true;
-	bool resize_disp	 = false;
-	bool is_first_select = true;
-
 	while( !disp.is_closed() )
 	{
-		if( reset_view )
+		if( reset_view_ )
 		{
 			resetView( disp );
-			reset_view = false;
+			reset_view_ = false;
 		}
 
 		if( upper_left_[0] == 0 && upper_left_[1] == 0 && upper_left_[2] == 0 && lower_right_[0] == cur_im_.width() -
@@ -420,10 +416,10 @@ int OMViewerApp::display( CImgDisplay& disp )
 		const unsigned int tw = dx + ( dz > 1 ? dz : 0 );
 		const unsigned int th = dy + ( dz > 1 ? dz : 0 );
 
-		if( !cur_im_.is_empty() && !disp.is_fullscreen() && resize_disp )
+		if( !cur_im_.is_empty() && !disp.is_fullscreen() && resize_disp_ )
 		{
 			resizeView( disp, tw, th);
-			resize_disp = false;
+			resize_disp_ = false;
 		}
 		old_w_ = tw;
 		old_h_ = th;
