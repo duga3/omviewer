@@ -33,8 +33,12 @@ CImg<float>ImageList::previousImage()
 	return getImage( cur_i_ );
 }
 
-CImg<float>ImageList::getImage( size_t i ) const
+CImg<float>ImageList::getImage( int i ) const
 {
+	if (i < 0)
+	{
+		i = cur_i_;
+	}
 	CImg<float> im( ( dir_name_ + file_names_.at( i ) ).c_str() );
 	return im;
 }

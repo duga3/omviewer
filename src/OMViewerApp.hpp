@@ -24,7 +24,7 @@ public:
 	OMViewerApp(const std::string& image_dir) : im_list_(image_dir) {};
 	void run();
 private:
-	int display( cimg_library::CImgDisplay & disp);
+	int display();
 	void resetView(cimg_library::CImgDisplay & disp);
 	void resizeView(cimg_library::CImgDisplay & disp, unsigned int tw, unsigned int th);
 	int getSelection(const cimg_library::CImg<float>& im, cimg_library::CImgDisplay & disp);
@@ -34,6 +34,8 @@ private:
 	ViewAction view_action_;
 	cimg_library::CImg<float> cur_im_;
 	cimg_library::CImg<float> cur_view_im_;
+	cimg_library::CImgDisplay main_disp_;
+	cimg_library::CImgDisplay graph_disp_;
 
 	unsigned int XYZ_[3];
 	int upper_left_[3];
@@ -47,6 +49,8 @@ private:
 	// per frame actions
 	bool equalize_depth_image_;
 	bool histogram_equalize_;
+	bool draw_histogram_;
+	bool draw_histogram_continuous_;
 
 };
 } // namespace

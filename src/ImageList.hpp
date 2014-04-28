@@ -12,7 +12,7 @@ public:
 	ImageList( const std::string& dir_name );
 	cimg_library::CImg<float>nextImage();
 	cimg_library::CImg<float>previousImage();
-	cimg_library::CImg<float>getImage( size_t i ) const;
+	cimg_library::CImg<float>getImage( int i = -1) const;
 	std::string				 getCurrentFileName() const;
 
 private:
