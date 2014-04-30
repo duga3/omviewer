@@ -13,7 +13,7 @@ void OMViewerApp::run()
 
 	main_disp_ = cimg_library::CImgDisplay( cur_im_ );
 	main_disp_.set_title( im_list_.getCurrentFileName().c_str() );
-	equalize_depth_image_	   = cur_im_.max() > 255 ? true : false;
+	equalize_depth_image_	   = false;
 	histogram_equalize_		   = false;
 	draw_histogram_			   = false;
 	draw_histogram_continuous_ = false;
@@ -44,6 +44,44 @@ int OMViewerApp::display()
 	while( !main_disp_.is_closed() &&  main_disp_.key() != cimg::keyQ )
 	{
 		cur_view_im_ = cur_im_;
+
+		if( equalize_depth_image_ )
+		{
+			float new_val = cur_view_im_.max() + 1;
+			cimg_forXY( cur_view_im_, x, y )
+			{
+				if( cur_view_im_( x, y ) == 0 )
+				{
+					cur_view_im_( x, y ) = new_val;
+				}
+			}
+		}
+
+		if( histogram_equalize_ )
+		{
+			const int numBins = 100;
+			cur_view_im_ = cur_view_im_.equalize( numBins );
+		}
+
+		if( draw_histogram_ )
+		{
+			const int	numBins = 50;
+			CImg<float> hist	= cur_view_im_.get_histogram( numBins );
+			hist.display_graph( "histogram", 1 );
+			draw_histogram_ = false;
+		}
+
+		if( draw_histogram_continuous_ )
+		{
+			const int	numBins = 50;
+			CImg<float> hist2	= cur_view_im_.get_histogram( numBins, cur_view_im_.min(), cur_view_im_.max() );
+			CImg<float> hist( 640, 480, 1, 1, 255 );
+			const int	col[3] = { 0, 0, 0 };
+			hist.draw_graph( hist2, col, 1, 1 );
+			hist.draw_axes( cur_view_im_.min(), cur_view_im_.max(), hist2.max(), 0, col, 0.7f );
+			hist.draw_grid( 50, 50, 0, 0, false, false, col, 0.3f, 0xCCCCCCCC, 0xCCCCCCCC );
+			graph_disp_.display( hist );
+		}
 
 		if( upper_left_[0]  == 0 && upper_left_[1]  == 0 && upper_left_[2]  == 0 && lower_right_[0] == cur_im_.width() -
 			1 && lower_right_[1] == cur_im_.height() - 1 && lower_right_[2] == cur_im_.depth() - 1 )
@@ -80,43 +118,6 @@ int OMViewerApp::display()
 		}
 		old_w_ = tw;
 		old_h_ = th;
-
-		if( equalize_depth_image_ )
-		{
-			float new_val = cur_view_im_.max() + 10;
-			cimg_forXY( cur_view_im_, x, y )
-			{
-				if( cur_view_im_( x, y ) == 0 )
-				{
-					cur_view_im_( x, y ) = new_val;
-				}
-			}
-		}
-
-		if( histogram_equalize_ )
-		{
-			const int numBins = 100;
-			cur_view_im_ = cur_view_im_.equalize( numBins );
-		}
-
-		if( draw_histogram_ )
-		{
-			const int	numBins = 50;
-			CImg<float> hist	= cur_view_im_.get_histogram( numBins );
-			hist.display_graph( "histogram", 1 );
-		}
-
-		if( draw_histogram_continuous_ )
-		{
-			const int	numBins = 50;
-			CImg<float> hist2	= cur_view_im_.get_histogram( numBins, cur_view_im_.min(), cur_view_im_.max() );
-			CImg<float> hist( 640, 480, 1, 1, 255 );
-			const int	col[3] = { 0, 0, 0 };
-			hist.draw_graph( hist2, col, 1, 1 );
-			hist.draw_axes( cur_view_im_.min(), cur_view_im_.max(), hist2.max(), 0, col, 0.7f );
-			hist.draw_grid( 50, 50, 0, 0, false, false, col, 0.3f, 0xCCCCCCCC, 0xCCCCCCCC );
-			graph_disp_.display( hist );
-		}
 
 		const CImg<float>& visu = zoom ? zoom : cur_view_im_;
 
@@ -157,9 +158,9 @@ void OMViewerApp::resetView( cimg_library::CImgDisplay& disp )
 
 void OMViewerApp::resizeView( cimg_library::CImgDisplay& disp, unsigned int tw, unsigned int th )
 {
-	const unsigned int ttw	= tw *  main_disp_.width() / old_w_;
-	const unsigned int tth	= th *  main_disp_.height() / old_h_;
-	const unsigned int dM	= cimg::max( ttw, tth ), diM = (unsigned int)cimg::max(
+	const unsigned int ttw = tw *  main_disp_.width() / old_w_;
+	const unsigned int tth = th *  main_disp_.height() / old_h_;
+	const unsigned int dM  = cimg::max( ttw, tth ), diM = (unsigned int)cimg::max(
 		 main_disp_.width(),  main_disp_.height() );
 	const unsigned int imgw = cimg::max( 16U, ttw * diM / dM );
 	const unsigned int imgh = cimg::max( 16U, tth * diM / dM );
@@ -291,7 +292,7 @@ int OMViewerApp::getSelection( const cimg_library::CImg<float>& subim, cimg_libr
 			case cimg::keyH:
 				draw_histogram_ = !draw_histogram_;
 				break;
-		} // switch
+		}         // switch
 	}
 	return key;
 } // OMViewerApp::getSelection

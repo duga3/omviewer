@@ -5,8 +5,9 @@
 
 using namespace cimg_library;
 
-namespace omviewer {
-ImageList::ImageList( const std::string& dir_name ):cur_i_( 0 ), dir_name_( dir_name )
+namespace omviewer
+{
+ImageList::ImageList( const std::string& dir_name ) : cur_i_( 0 ), dir_name_( dir_name )
 {
 	readFiles( dir_name_ );
 }
@@ -35,7 +36,7 @@ CImg<float>ImageList::previousImage()
 
 CImg<float>ImageList::getImage( int i ) const
 {
-	if (i < 0)
+	if( i < 0 )
 	{
 		i = cur_i_;
 	}
@@ -62,7 +63,7 @@ void ImageList::readFiles( const std::string& dir_name )
 	// actual file rather than dir
 	if( !fs::is_directory( image_directory ) )
 	{
-		starting_file = image_directory.leaf().string();
+		starting_file	= image_directory.leaf().string();
 		image_directory = image_directory.parent_path();
 	}
 
@@ -96,7 +97,16 @@ void ImageList::readFiles( const std::string& dir_name )
 	// find index of starting file
 	if( starting_file != "" )
 	{
-		cur_i_ = std::find( file_names_.begin(), file_names_.end(), starting_file ) - file_names_.begin();
+		auto it = std::find( file_names_.begin(), file_names_.end(), starting_file );
+		if(it != file_names_.end())
+		{
+			cur_i_ = it - file_names_.begin();
+		}
+		else
+		{
+			cur_i_ = 0;
+		}
+
 	}
 } // ImageList::readFiles
 } // namespace
