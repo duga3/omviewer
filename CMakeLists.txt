@@ -29,6 +29,7 @@ endif(APPLE)
 
 add_executable(omviewer ${source} ${headers})
 message(${X11_LIBRARIES})
-target_link_libraries(	omviewer 
-						${Boost_LIBRARIES} 
-						${X11_LIBRARIES})
+target_link_libraries(omviewer
+                      pthread
+		      ${Boost_LIBRARIES} 
+		      ${X11_LIBRARIES})
